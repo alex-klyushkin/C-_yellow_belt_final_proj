@@ -20,7 +20,7 @@ istream& operator>>(istream& is, Date& d)
 
 std::ostream& operator<<(std::ostream& os, const Date& d)
 {
-	os << std::setw(2) << setfill('0') << d.year << "-" << std::setw(2) << setfill('0') << d.mounth << "-" << std::setw(2) << setfill('0') << d.day;
+	os << std::setw(4) << setfill('0') << d.year << "-" << std::setw(2) << setfill('0') << d.mounth << "-" << std::setw(2) << setfill('0') << d.day;
 	return os;
 }
 

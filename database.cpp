@@ -14,9 +14,11 @@ ostream& operator<<(ostream& os, const pair<Date, string>& p)
 
 void Database::Add(const Date& d, const string& event)
 {
+	auto ptr = make_shared<string>(event);
 	auto& events = database_[d];
-	if (find(events.cbegin(), events.cend(), event) == events.cend()) {
-		events.push_back(event);
+	if (!events.eventsSet.count(ptr)) {
+		events.eventsVec.push_back(ptr);
+		events.eventsSet.insert(ptr);
 	}
 }
 
@@ -24,8 +26,8 @@ void Database::Add(const Date& d, const string& event)
 void Database::Print(ostream& os) const
 {
 	for (const auto& [date, events] : database_) {
-		for (const auto& event : events) {
-			os << date << " " << event << endl;
+		for (const auto& event : events.eventsVec) {
+			os << date << " " << *event << endl;
 		}
 	}
 }
@@ -39,5 +41,5 @@ pair<Date, string> Database::Last(const Date& d) const
 	}
 
 	it = prev(it);
-	return make_pair(it->first, it->second.back());
+	return make_pair(it->first, *it->second.eventsVec.back());
 }
