@@ -8,19 +8,11 @@
 #include <utility>
 #include <memory>
 #include <set>
+#include <sstream>
 #include "date.h"
 
 
 std::ostream& operator<<(std::ostream& os, const std::pair<Date, std::string>& p);
-
-
-struct Compare
-{
-	bool operator()(const std::shared_ptr<std::string>& lhs, const std::shared_ptr<std::string>& rhs) const
-	{
-		return *lhs < *rhs;
-	}
-};
 
 
 class Database
@@ -39,16 +31,33 @@ public:
 			const auto& dt = dbIt->first;
 			auto& eventsVec = dbIt->second.eventsVec;
 			auto& eventsSet = dbIt->second.eventsSet;
-			auto vecIt = remove_if(eventsVec.begin(), eventsVec.end(), [&dt, &pred](const std::shared_ptr<std::string>& ev) { return pred(dt, *ev); });
+			auto vecIt = std::stable_partition(eventsVec.begin(), eventsVec.end(), [&dt, &pred](const std::string& ev) { return !pred(dt, ev); });
 
 			for (auto it = vecIt; it != eventsVec.end(); ++it) {
-				eventsSet.erase(*it);
+				auto res = eventsSet.erase(*it);
+				if (!res) {
+					std::ostringstream out;
+					out << "vec size " << eventsVec.size() << " set size " << eventsSet.size() << " ";
+					for (const auto& str : eventsVec) {
+						out << str << " ";
+					}
+					for (const auto& str : eventsSet) {
+						out << str << " ";
+					}
+					out << "Can't erase elem from set: " << *it;
+					throw std::logic_error(out.str());
+				}
 			}
 
 			count += std::distance(vecIt, eventsVec.end());
 			eventsVec.erase(vecIt, eventsVec.end());
 
 			if (eventsVec.empty()) {
+				if (!eventsSet.empty()) {
+					std::ostringstream out;
+					out << eventsSet.size();
+					throw std::logic_error(out.str());
+				}
 				dbIt = database_.erase(dbIt);
 			} else {
 				++dbIt;
@@ -63,8 +72,8 @@ public:
 		std::vector<std::pair<Date, std::string>> out;
 		for (const auto& [date, events] : database_) {
 			for (const auto& event : events.eventsVec) {
-				if (p(date, *event)) {
-					out.push_back(std::make_pair(date, *event));
+				if (p(date, event)) {
+					out.push_back(std::make_pair(date, event));
 				}
 			}
 		}
@@ -74,8 +83,8 @@ public:
 private:
 	struct Events
 	{
-		std::set<std::shared_ptr<std::string>, Compare> eventsSet;
-		std::vector<std::shared_ptr<std::string>> eventsVec;
+		std::set<std::string> eventsSet;
+		std::vector<std::string> eventsVec;
 	};
 	using DatabaseType = std::map<Date, Events>;
 	DatabaseType database_;

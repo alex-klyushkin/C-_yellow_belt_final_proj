@@ -72,7 +72,7 @@ void FindCmd::Exec(Database& db, std::ostream& os) const
 
     const auto entries = db.FindIf(predicate);
 	for (const auto& ent : entries) {
-		os << ent << std::endl;
+		os << ent << endl;
 	}
     os << "Found " << entries.size() << " entries" << endl;
 }

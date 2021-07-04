@@ -42,11 +42,12 @@ void DatabaseTestAdd()
 		string input(R"test(
 				Add 2017-1-1 New Year
 				Add 2017-1-1 New Year
-				Del date == 2017-1-1
+				Add 2017-1-1 Holyday
+				Del date == 2017-1-1 AND event == "New Year"
 				Print
 				Add 2017-1-1 New Year
 				Print)test");
-		string forComp("Removed 1 entries\n" "2017-01-01 New Year\n");
+		string forComp("Removed 1 entries\n" "2017-01-01 Holyday\n" "2017-01-01 Holyday\n" "2017-01-01 New Year\n");
 		DatabaseTest(input, forComp, "DatabaseTestAdd3");
 	}
 }

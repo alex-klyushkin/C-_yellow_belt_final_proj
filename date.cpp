@@ -76,3 +76,40 @@ void DateTestComparison()
 	Assert(d1 >= d1, "DateTestComparison8");
 }
 
+
+void DataTestInput()
+{
+	istringstream input("2017-05-2 0001-1-1 0-1-31 0000-2-2");
+	Date d1, d2, d3, d4;
+	input >> d1 >> d2 >> d3 >> d4;
+	AssertEqual(d1, Date{2017, 5, 2}, "DataTestInput1");
+	AssertEqual(d2, Date{1, 1, 1}, "DataTestInput2");
+	AssertEqual(d3, Date{0, 1, 31}, "DataTestInput3");
+	AssertEqual(d4, Date{0, 2, 2}, "DataTestInput4");
+}
+
+
+void DataTestOutput()
+{
+	Date d1{2017, 5, 2};
+	Date d2{1, 1, 1};
+	Date d3{0, 1, 31};
+	Date d4{0, 2, 2};
+	ostringstream output;
+
+	output << d1;
+	AssertEqual(output.str(), "2017-05-02", "DateTestOutput1");
+	output.str("");
+
+	output << d2;
+	AssertEqual(output.str(), "0001-01-01", "DateTestOutput2");
+	output.str("");
+
+	output << d3;
+	AssertEqual(output.str(), "0000-01-31", "DateTestOutput3");
+	output.str("");
+
+	output << d4;
+	AssertEqual(output.str(), "0000-02-02", "DateTestOutput4");
+	output.str("");
+}

@@ -43,4 +43,6 @@ void TestAll()
   tr.RunTest(DatabaseTestCommon, "DatabaseTestCommon");
 
   tr.RunTest(DateTestComparison, "DateTestComparison");
+  tr.RunTest(DataTestInput, "DataTestInput");
+  tr.RunTest(DataTestOutput, "DataTestOutput");
 }
